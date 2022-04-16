@@ -38,7 +38,7 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
   image_size=(img_height, img_width),
   batch_size=batch_size)
 
-  # vérification des labels
+# vérification des labels
 
 class_names = train_ds.class_names
 print(class_names)
@@ -81,7 +81,8 @@ model.compile(
   loss=tf.losses.SparseCategoricalCrossentropy(from_logits=True),
   metrics=['accuracy'])
 
-
+model.build(image_batch.shape)
+model.summary()
 
 history = model.fit(train_ds,validation_data=val_ds,epochs=30)
 
