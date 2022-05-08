@@ -49,10 +49,6 @@ print(class_names)
 
 print(train_ds.class_names)
 
-labels = '\n'.join(sorted(
-  train_ds.class_names.keys()))
-with open('labels.txt','w') as f:
-  f.write(labels)
 
 for image_batch, labels_batch in train_ds:
   print(image_batch.shape)
@@ -69,13 +65,12 @@ for images, labels in train_ds.take(1):
     plt.axis("off")
 plt.show()
 
-print('hello world')
 
 num_classes = 4
 
 model = tf.keras.Sequential([
   tf.keras.layers.Rescaling(1./255),
-  tf.keras.layers.Conv2D(32, 3, activation='relu'),
+  tf.keras.layers.Conv2D(16, 3, activation='relu'),
   tf.keras.layers.MaxPooling2D(),
   tf.keras.layers.Conv2D(32, 3, activation='relu'),
   tf.keras.layers.MaxPooling2D(),
@@ -115,20 +110,14 @@ plt.show()
 
 #save model
 
+model.save('final_model.h5')
 
-
-
-
-
-model.save('my_model(1).h5')
-
-new_model = tf.keras.models.load_model('my_model(1).h5')
-#new_model.summary()
+new_model = tf.keras.models.load_model('final_model.h5')
 
 #Convert the model.
 converter = tf.lite.TFLiteConverter.from_keras_model(new_model)
 tflite_model = converter.convert()
 
 # Save the model.
-with open('model(1).tflite', 'wb') as f:
+with open('final_model.tflite', 'wb') as f:
   f.write(tflite_model)
