@@ -21,6 +21,7 @@ print(image_count)
 batch_size = 32
 img_height = 28
 img_width = 28
+input_shape = (img_height,img_width,3)
 
 #préparation des données
 
@@ -29,7 +30,6 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
   validation_split=0.2,
   subset="training",
   seed=123,
-  color_mode='grayscale',
   image_size=(img_height, img_width),
   batch_size=batch_size)
 
@@ -38,7 +38,6 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
   validation_split=0.2,
   subset="validation",
   seed=123,
-  color_mode='grayscale',
   image_size=(img_height, img_width),
   batch_size=batch_size)
 
@@ -48,7 +47,7 @@ class_names = train_ds.class_names
 print(class_names)
 
 print(train_ds.class_names)
-
+print(val_ds.class_names)
 
 for image_batch, labels_batch in train_ds:
   print(image_batch.shape)
@@ -69,12 +68,12 @@ plt.show()
 num_classes = 4
 
 model = tf.keras.Sequential([
-  tf.keras.layers.Rescaling(1./255),
+  tf.keras.layers.Rescaling(1./255, input_shape=(img_height, img_width, 3)),
   tf.keras.layers.Conv2D(16, 3, activation='relu'),
   tf.keras.layers.MaxPooling2D(),
   tf.keras.layers.Conv2D(32, 3, activation='relu'),
   tf.keras.layers.MaxPooling2D(),
-  tf.keras.layers.Conv2D(32, 3, activation='relu'),
+  tf.keras.layers.Conv2D(64, 3, activation='relu'),
   tf.keras.layers.MaxPooling2D(),
   tf.keras.layers.Flatten(),
   tf.keras.layers.Dense(128, activation='relu'),
@@ -90,7 +89,8 @@ model.compile(
 model.build(image_batch.shape)
 model.summary()
 
-history = model.fit(train_ds,validation_data=val_ds,epochs=30)
+epochs = 20
+history = model.fit(train_ds,validation_data=val_ds,epochs=epochs)
 
 plt.plot(history.history['accuracy'])
 plt.title('model accuracy')
@@ -106,18 +106,60 @@ plt.xlabel('epoch')
 plt.legend(['Train'], loc='upper left')
 plt.show()
 
+acc = history.history['accuracy']
+val_acc = history.history['val_accuracy']
+
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+
+epochs_range = range(epochs)
+
+plt.figure(figsize=(8, 8))
+plt.subplot(1, 2, 1)
+plt.plot(epochs_range, acc, label='Training Accuracy')
+plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+plt.legend(loc='lower right')
+plt.title('Training and Validation Accuracy')
+
+plt.subplot(1, 2, 2)
+plt.plot(epochs_range, loss, label='Training Loss')
+plt.plot(epochs_range, val_loss, label='Validation Loss')
+plt.legend(loc='upper right')
+plt.title('Training and Validation Loss')
+plt.show()
+
+
+print("..")
+
+test_loss, test_accuracy = model.evaluate(val_ds)
+
+sample_path = "sample_3.png"
+
+img = tf.keras.utils.load_img(sample_path, target_size=(img_height, img_width))
+
+img_array = tf.keras.utils.img_to_array(img)
+img_array = tf.expand_dims(img_array, 0)
+
+predictions = model.predict(img_array)
+score = tf.nn.softmax(predictions[0])
+
+print(
+    "This image most likely belongs to {} with a {:.2f} percent confidence."
+    .format(class_names[np.argmax(score)], 100 * np.max(score))
+)
+
 
 
 #save model
 
-model.save('final_model.h5')
+#model.save('final_model_1.1.h5')
 
-new_model = tf.keras.models.load_model('final_model.h5')
+#new_model = tf.keras.models.load_model('final_model_1.1.h5')
 
 #Convert the model.
-converter = tf.lite.TFLiteConverter.from_keras_model(new_model)
-tflite_model = converter.convert()
+#converter = tf.lite.TFLiteConverter.from_keras_model(new_model)
+#tflite_model = converter.convert()
 
 # Save the model.
-with open('final_model.tflite', 'wb') as f:
-  f.write(tflite_model)
+#with open('final_model.tflite', 'wb') as f:
+#  f.write(tflite_model)
