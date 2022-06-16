@@ -1,5 +1,6 @@
 import numpy as np
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import PIL
 import PIL.Image
 import tensorflow as tf
@@ -11,7 +12,7 @@ import random
 
 
 
-image_path = os.path.dirname(r'C:/Users/alexa/OneDrive/Documents/GitHub/KanjiDetector/data/')
+image_path = os.path.dirname(r'C:/Users/alexa/OneDrive/Documents/GitHub/KanjiDetector/dataKanji/')
 data = pathlib.Path(image_path)
 
 image_count = len(list(data.glob('*/*.png')))
@@ -19,8 +20,8 @@ print(image_count)
 
 
 batch_size = 32
-img_height = 28
-img_width = 28
+img_height = 75
+img_width = 75
 input_shape = (img_height,img_width,3)
 
 #préparation des données
@@ -65,7 +66,7 @@ for images, labels in train_ds.take(1):
 plt.show()
 
 
-num_classes = 4
+num_classes = len(class_names)
 
 model = tf.keras.Sequential([
   tf.keras.layers.Rescaling(1./255, input_shape=(img_height, img_width, 3)),
@@ -89,7 +90,7 @@ model.compile(
 model.build(image_batch.shape)
 model.summary()
 
-epochs = 20
+epochs = 10
 history = model.fit(train_ds,validation_data=val_ds,epochs=epochs)
 
 plt.plot(history.history['accuracy'])
@@ -133,7 +134,7 @@ print("..")
 
 test_loss, test_accuracy = model.evaluate(val_ds)
 
-sample_path = "sample_3.png"
+sample_path = "samples/sample_11.png"
 
 img = tf.keras.utils.load_img(sample_path, target_size=(img_height, img_width))
 
