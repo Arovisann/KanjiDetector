@@ -77,6 +77,7 @@ model = tf.keras.Sequential([
   tf.keras.layers.Conv2D(64, 3, activation='relu'),
   tf.keras.layers.MaxPooling2D(),
   tf.keras.layers.Flatten(),
+  tf.keras.layers.Dropout(0.5),
   tf.keras.layers.Dense(128, activation='relu'),
   tf.keras.layers.Dense(num_classes)
 ])
@@ -134,7 +135,7 @@ print("..")
 
 test_loss, test_accuracy = model.evaluate(val_ds)
 
-sample_path = "samples/sample_11.png"
+sample_path = "samples/sample_9.png"
 
 img = tf.keras.utils.load_img(sample_path, target_size=(img_height, img_width))
 

@@ -3,7 +3,7 @@ import numpy
 
 #shape h=757,w=756
 
-img =  cv2.imread("C:\\Users\\alexa\\OneDrive\\Bureau\\kanjis\\100.png")
+img =  cv2.imread("C:\\Users\\alexa\\OneDrive\\Documents\\GitHub\\KanjiDetector\\raw_data\\100.png")
 image_copy = img.copy()
 imgheight=img.shape[0]
 print(imgheight)
@@ -59,4 +59,3 @@ cv2.imwrite("patched.jpg",img)
 cv2.waitKey()
 cv2.destroyAllWindows()
 
-#ne fait pas les 10x10, car l'ensemble des tuiles sont plus grande que la HxW de l'image. trouver un moyen de forcer un float à être un int. ligne 16
