@@ -135,7 +135,7 @@ print("..")
 
 test_loss, test_accuracy = model.evaluate(val_ds)
 
-sample_path = "samples/sample_9.png"
+sample_path = "samples/sample_8.png"
 
 img = tf.keras.utils.load_img(sample_path, target_size=(img_height, img_width))
 
