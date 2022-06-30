@@ -11,7 +11,7 @@ import pathlib
 import random
 
 
-
+#récupération des données
 image_path = os.path.dirname(r'C:/Users/alexa/OneDrive/Documents/GitHub/KanjiDetector/dataKanji/')
 data = pathlib.Path(image_path)
 
@@ -55,7 +55,7 @@ for image_batch, labels_batch in train_ds:
   print(labels_batch.shape)
   break
 
-
+# visualise les 9 premiers caractères de l'ensemble d'entraînement.
 plt.figure(figsize=(10, 10))
 for images, labels in train_ds.take(1):
   for i in range(9):
@@ -67,6 +67,8 @@ plt.show()
 
 
 num_classes = len(class_names)
+
+# architecture séquentiel du modèle.
 
 model = tf.keras.Sequential([
   tf.keras.layers.Rescaling(1./255, input_shape=(img_height, img_width, 3)),
@@ -82,6 +84,7 @@ model = tf.keras.Sequential([
   tf.keras.layers.Dense(num_classes)
 ])
 
+#compilation du modèle et lancement de la phase d'entraînement.
 
 model.compile(
   optimizer='adam',
@@ -94,6 +97,7 @@ model.summary()
 epochs = 10
 history = model.fit(train_ds,validation_data=val_ds,epochs=epochs)
 
+#visualisation du taux de précision et de perte du modèle.
 plt.plot(history.history['accuracy'])
 plt.title('model accuracy')
 plt.ylabel('accuracy')
@@ -116,6 +120,7 @@ val_loss = history.history['val_loss']
 
 epochs_range = range(epochs)
 
+#visualisation du taux de précision et de perte du modèle.
 plt.figure(figsize=(8, 8))
 plt.subplot(1, 2, 1)
 plt.plot(epochs_range, acc, label='Training Accuracy')
@@ -132,6 +137,8 @@ plt.show()
 
 
 print("..")
+
+#test de prédiction et évaluation
 
 test_loss, test_accuracy = model.evaluate(val_ds)
 
@@ -154,14 +161,14 @@ print(
 
 #save model
 
-#model.save('final_model_1.1.h5')
+model.save('final_model.h5')
 
-#new_model = tf.keras.models.load_model('final_model_1.1.h5')
+new_model = tf.keras.models.load_model('final_model.h5')
 
 #Convert the model.
-#converter = tf.lite.TFLiteConverter.from_keras_model(new_model)
-#tflite_model = converter.convert()
+converter = tf.lite.TFLiteConverter.from_keras_model(new_model)
+tflite_model = converter.convert()
 
-# Save the model.
-#with open('final_model.tflite', 'wb') as f:
-#  f.write(tflite_model)
+#Save the model.
+with open('final_model.tflite', 'wb') as f:
+  f.write(tflite_model)
